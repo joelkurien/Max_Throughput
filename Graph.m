@@ -1,6 +1,6 @@
 %node names: 1 2 3 4
 %distance of nodes from broadcasting station: 
-distBS = [0.2 0.15 0.125 0.1];
+distBS = [1 1.5 1.25 1.75];
 sourceNode = [1 1 2 3 3 4 4];
 destNode = [2 3 1 2 1 2 3];
 graph = digraph(sourceNode, destNode);
@@ -29,19 +29,6 @@ targetSINR = -25;
 awgn = 0.01;
 nodePower = [0.01 0.01 0.01 0.01];
 
-Gijxp = zeros(4,1)';
-for i=2:7
-    if(sourceNode(i) == sourceNode(i-1))
-        Gijxp(sourceNode(i)) = gij(i-1)/gii(sourceNode(i-1))*nodePower(destNode(i-1)) + gij(i)/gii(sourceNode(i))*nodePower(destNode(i-1));
-    else
-        if(i<7)
-            if(sourceNode(i) ~= sourceNode(i+1))
-                Gijxp(sourceNode(i)) = gij(i)/gii(sourceNode(i))*nodePower(destNode(i)); 
-            end
-        end
-    end
-end
-
 Gij = zeros(4,1)';
 for i=2:7
     if(sourceNode(i) == sourceNode(i-1))
@@ -54,22 +41,26 @@ for i=2:7
         end
     end
 end
+
 threshold = 10^(-20);
 newpower = [0.01 0.01 0.01 0.01];
+%implementation of optimal power for maximum throughput
 for i=1:4
     while 1
-        if (newpower(i) <= 2)
-            omega = 1+newpower(i)/(targetSINR.*(Gijxp(i) + awgn/gii(i)));
-            u_value = (newpower(i)*omega).^2/(newpower(i) + targetSINR.*(Gijxp(i) + awgn/gii(i))).^4;
+        if (newpower(i)<=2)
+            avg_SINR = averageSINRfn(gii, gij, sourceNode, destNode, newpower);
+            gijsum = GijFunction(gii, gij, sourceNode, destNode, newpower);
+            omega = 1+newpower(i)/(targetSINR.*(gijsum(i) + awgn/gii(i)));
+            u_value = (newpower(i)*omega).^2/(newpower(i) + targetSINR.*(gijsum(i) + awgn/gii(i))).^4;
             powert1 = omega.^2/(u_value.*(1+targetSINR*Gij(i)).^2);
         end
-        if(abs(powert1-newpower(i))>=threshold)
+        if(abs(powert1-newpower(i))>threshold)
             newpower(i) = powert1;
         else
-            break
+            break;
         end
     end
 end
 newpower
-powerMatrix = [nodePower; newpower];
+% powerMatrix = [nodePower; newpower];
 bar(newpower);
