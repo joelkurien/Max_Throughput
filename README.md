@@ -1,8 +1,5 @@
 # Max_Throughput
-Implementation of an algorithm for finding the optimal power allocation for different systems/nodes in a distributed computer network system.
-* First Assumption:
-  - If the difference between the new power and the old power obtained is greater than the convergence threshold value(ε), then the new power is assigned to the old power
-
-## Assumptions for the initial implementation:
-* Assumption:
-  - Here, in the first implementation of the algorithm, we have considered that the values for average internal channel gain(g<sub>ii</sub>) and the value for the external channel gain(g<sub>ij</sub>) are initially given 
+Implementation of an algorithm for finding the optimal power allocation for data communication and transmission between a source node with a target receiving node under the influence of other neighboring adjacent nodes.
+  * Assumptions 
+    - The network system is in a uniform network space i.e. the amount of data power consumed for both sending and recieving data from a source node to a destination node is going to be same through out the transaction.
+    - The only interference to the transmission of data between the target node and the source node are the other neighboring nodes.
